@@ -1,0 +1,12 @@
+Pass the array to your EJS view template using res.render.
+app.get('/courses', (req, res) => {
+    const courses = ["Node JS", "MongoDB", "React", "Express"];
+    res.render('courses', { courseList: courses });
+});
+the view:
+<h2>Course List</h2>
+<ul>
+    <% courseList.forEach(function(course) { %>
+        <li><%= course %></li>
+    <% }); %>
+</ul>
