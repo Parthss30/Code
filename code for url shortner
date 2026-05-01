@@ -1,0 +1,51 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const shortid = require('shortid');
+const validUrl = require('valid-url');
+const Url = require('./Url');
+
+const app = express();
+app.use(express.json());
+
+// MongoDB Connection
+mongoose.connect('mongodb://localhost:27017/urlshortener');
+
+// POST: Create a short URL
+app.post('/shorten', async (req, res) => {
+    const { longUrl } = req.body;
+    const baseUrl = 'http://localhost:5000';
+
+    if (!validUrl.isUri(longUrl)) {
+        return res.status(401).json('Invalid long URL');
+    }
+
+    try {
+        let url = await Url.findOne({ longUrl });
+        if (url) {
+            res.json(url);
+        } else {
+            const shortCode = shortid.generate();
+            url = new Url({ longUrl, shortCode });
+            await url.save();
+            res.json(url);
+        }
+    } catch (err) {
+        res.status(500).json('Server error');
+    }
+});
+
+// GET: Redirect to long URL
+app.get('/:code', async (req, res) => {
+    try {
+        const url = await Url.findOne({ shortCode: req.params.code });
+        if (url) {
+            return res.redirect(url.longUrl);
+        } else {
+            return res.status(404).json('No URL found');
+        }
+    } catch (err) {
+        res.status(500).json('Server error');
+    }
+});
+
+app.listen(5000, () => console.log('Server running on port 5000'));
