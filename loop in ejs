@@ -1,0 +1,16 @@
+For each loop:
+<ul>
+  <% items.forEach(function(item) { %>
+    <li><%= item %></li>
+  <% }); %>
+</ul>
+
+Standard for loop:
+<% for (let i = 0; i < items.length; i++) { %>
+  <p>Item at index <%= i %> is <%= items[i] %></p>
+<% } %>
+
+for..of loop:
+<% for (let item of items) { %>
+  <div><%= item %></div>
+<% } %>
